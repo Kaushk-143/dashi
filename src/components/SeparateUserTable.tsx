@@ -34,8 +34,6 @@ export const SeparateUserTable: React.FC<SeparateUserTableProps> = ({
   renderFilterControls,
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
 
   const filteredUsers = users.filter(user => {
     const fullName = `${user.first_name} ${user.last_name}`.toLowerCase();
@@ -43,12 +41,6 @@ export const SeparateUserTable: React.FC<SeparateUserTableProps> = ({
     const emailMatch = user.email.toLowerCase().includes(searchTerm.toLowerCase());
     return nameMatch || emailMatch;
   });
-
-  const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
-  const currentUsers = filteredUsers.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-md">
@@ -62,7 +54,6 @@ export const SeparateUserTable: React.FC<SeparateUserTableProps> = ({
             value={searchTerm}
             onChange={(e) => {
               setSearchTerm(e.target.value);
-              setCurrentPage(1); 
             }}
             className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
@@ -90,8 +81,8 @@ export const SeparateUserTable: React.FC<SeparateUserTableProps> = ({
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {currentUsers.length > 0 ? (
-              currentUsers.map((user) => (
+            {filteredUsers.length > 0 ? (
+              filteredUsers.map((user) => (
                 <tr key={user.id}>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{`${user.first_name} ${user.last_name}`}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{user.email}</td>
@@ -107,27 +98,13 @@ export const SeparateUserTable: React.FC<SeparateUserTableProps> = ({
         </table>
       </div>
 
-      {totalPages > 1 && (
-        <div className="flex justify-between items-center mt-4">
-          <button
-            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-            disabled={currentPage === 1}
-            className="px-4 py-2 text-sm font-medium rounded-lg text-blue-700 bg-blue-100 hover:bg-blue-200 disabled:opacity-50"
-          >
-            Previous
-          </button>
-          <span className="text-sm text-gray-700">
-            Page {currentPage} of {totalPages}
-          </span>
-          <button
-            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-            disabled={currentPage === totalPages}
-            className="px-4 py-2 text-sm font-medium rounded-lg text-blue-700 bg-blue-100 hover:bg-blue-200 disabled:opacity-50"
-          >
-            Next
-          </button>
-        </div>
-      )}
+      <div className="mt-4 text-sm text-gray-600 text-center">
+        {searchTerm ? (
+          <>Showing {filteredUsers.length} of {users.length} users</>
+        ) : (
+          <>Showing all {users.length} users</>
+        )}
+      </div>
     </div>
   );
 };

@@ -239,10 +239,11 @@ export const useUserData = () => {
   /**
    * Fetch users with pagination support
    * Includes total count for pagination controls
+   * Updated to fetch all users by default
    */
   const fetchUsersPaginated = async (
     page: number = 0,
-    pageSize: number = 50,
+    pageSize: number = 10000, // Large number to get all users
     orderBy: string = 'created_at',
     ascending: boolean = false
   ) => {
