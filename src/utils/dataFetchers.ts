@@ -367,6 +367,12 @@ export const fetchUserSessionEvents = async (sessionId: string) => {
       return null;
     }
 
+    // Ensure we have user data in the correct format
+    const userData = Array.isArray(data.users) ? data.users[0] : data.users;
+    if (!userData) {
+      throw new Error('User data not found for session');
+    }
+
     // Get all analytics events for this session
     const { data: eventsData, error: eventsError } = await supabase
       .from('user_analytics_events')
@@ -382,7 +388,7 @@ export const fetchUserSessionEvents = async (sessionId: string) => {
     const { data: subscriptionData, error: subError } = await supabase
       .from('subscriptions')
       .select(`
-        plan_id,
+        plan_type,
         status,
         current_period_end,
         plan_type,
@@ -390,10 +396,9 @@ export const fetchUserSessionEvents = async (sessionId: string) => {
         subscription_plans (
           name,
           price,
-          interval
         )
       `)
-      .eq('user_id', data.users[0].id)
+      .eq('user_id', userData.id)
       .eq('status', 'active')
       .single();
 
@@ -437,11 +442,11 @@ export const fetchUserSessionEvents = async (sessionId: string) => {
     // Re-organize the data to match the SessionWithEvents interface
     const sessionWithEvents: SessionWithEvents = {
       sessionId: data.id,
-      user: data.users,
+      user: userData,
       events: events,
       createdAt: data.started_at,
       subscription: subscriptionData ? {
-        plan_id: subscriptionData.plan_id,
+        plan_id: subscriptionData.plan_type,
         status: subscriptionData.status,
         current_period_end: subscriptionData.current_period_end,
         plan_type: subscriptionData.plan_type,

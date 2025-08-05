@@ -1,5 +1,5 @@
 // Enum for user_type
-export type UserType = 'student' | 'teacher' | 'admin' | 'guest';
+export type UserType = 'student' | 'teacher' | 'admin' | 'guest' | 'standard' | 'premium';
 
 export interface User {
   id: string;
@@ -113,7 +113,6 @@ export interface SessionWithEvents {
 export interface Subscription {
   id: string;
   user_id: string;
-  plan_id: string; // Use plan_id, not subscription_plan_id
   stripe_customer_id: string;
   stripe_subscription_id: string;
   plan_type: string;

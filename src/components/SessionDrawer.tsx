@@ -81,7 +81,7 @@ export const SessionDrawer: React.FC<SessionDrawerProps> = ({
                       <div>
                         <p className="text-sm font-medium text-gray-500">User Type</p>
                         <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                          sessionData.user.user_type === 'premium' 
+                          sessionData.user.user_type === 'premium' || sessionData.user.user_type === 'teacher'
                             ? 'bg-yellow-100 text-yellow-800' 
                             : 'bg-gray-100 text-gray-800'
                         }`}>
@@ -131,7 +131,7 @@ export const SessionDrawer: React.FC<SessionDrawerProps> = ({
                         </div>
                         <div>
                           <p className="text-sm font-medium text-gray-500">Trial</p>
-                          <p className="text-sm text-gray-900">{format(new Date(sessionData.user.created_at), 'MMM dd, yyyy HH:mm')}</p>
+                          <p className="text-sm text-gray-900">{sessionData.subscription.is_trial ? 'Yes' : 'No'}</p>
                         </div>
                         <div className="md:col-span-2">
                           <p className="text-sm font-medium text-gray-500">Current Period End</p>

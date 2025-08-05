@@ -66,7 +66,7 @@ const fetchOverview = async () => {
       // Fetch total users and user type breakdown from the 'users' table (keep this part)
       const { data: usersData, error: usersError } = await supabase
         .from('users')
-        .select('user_type'); // We no longer need has_active_subscription from users table here
+        .select('user_type, has_active_subscription');
 
       if (usersError) throw usersError;
 
@@ -78,25 +78,20 @@ const fetchOverview = async () => {
 
       if (activeUsersError) throw activeUsersError;
 
-      // --- NEW: Fetch active subscriptions from the 'subscriptions' table ---
+      // Fetch active subscriptions from the 'subscriptions' table
       const { count: activeSubscriptionsCount, error: subscriptionsError } = await supabase
         .from('subscriptions')
-        .select('*', { count: 'exact', head: true }) // Select count of all columns, head: true for count only
-        .eq('status', 'active'); // Filter for active subscriptions
+        .select('*', { count: 'exact', head: true })
+        .eq('status', 'active');
 
       if (subscriptionsError) throw subscriptionsError;
-      // --- END NEW ---
-
 
       const totalUsers = usersData.length;
       const activeUsers = new Set(activeUsersData.map(session => session.user_id)).size;
 
       const subscriptionBreakdown = {
-        active: activeSubscriptionsCount || 0, // Use the count from the subscriptions table
-        // If you need inactive subscriptions count from the 'subscriptions' table,
-        // you'll need another query or adjust the existing one.
-        // For now, we'll just focus on active.
-        inactive: 0 // You might need to fetch this separately if required
+        active: activeSubscriptionsCount || 0,
+        inactive: usersData.filter(user => !user.has_active_subscription).length
       };
 
       const userTypeBreakdown = {
